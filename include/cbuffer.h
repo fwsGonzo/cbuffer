@@ -1,6 +1,10 @@
 #ifndef CBUFFER_H
 #define CBUFFER_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 typedef struct
 {
     unsigned long int size;
@@ -70,5 +74,9 @@ int cbuf_unusedspace(const cbuf_t* cb);
  * @param cb The circular buffer.
  * @return 1 if empty; otherwise 0 */
 int cbuf_is_empty(const cbuf_t* cb);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* CBUFFER_H */
