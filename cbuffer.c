@@ -23,49 +23,38 @@
 static void __create_buffer_mirror(cbuf_t* cb)
 {
     char path[] = "/tmp/cb-XXXXXX";
-    int fd, status;
-    void *address;
 
-    fd = mkstemp(path);
-    if (fd < 0)
-        fail();
+    int fd = mkstemp(path);
+    assert(fd >= 0 && "cbuffer: mkstemp failed\n");
 
-    status = unlink(path);
-    if (status)
-        fail();
+    int status = unlink(path);
+    assert(status == 0 && "cbuffer: Unlink failed");
 
     status = ftruncate(fd, cb->size);
-    if (status)
-        fail();
+    assert(status == 0 && "cbuffer: ftruncate failed\n");
 
     /* create the array of data */
     cb->data = mmap(NULL, cb->size << 1, PROT_NONE, MAP_ANONYMOUS | MAP_PRIVATE,
                     -1, 0);
-    if (cb->data == MAP_FAILED)
-        fail();
+    assert(cb->data != MAP_FAILED && "cbuffer: mmap(1) failed\n");
 
-    address = mmap(cb->data, cb->size, PROT_READ | PROT_WRITE,
-                   MAP_FIXED | MAP_SHARED, fd, 0);
-    if (address != cb->data)
-        fail();
+    void* address = mmap(cb->data, cb->size, PROT_READ | PROT_WRITE,
+                         MAP_FIXED | MAP_SHARED, fd, 0);
+    assert(address == cb->data && "cbuffer: mmap(2) failed\n");
 
     address = mmap(cb->data + cb->size, cb->size, PROT_READ | PROT_WRITE,
                    MAP_FIXED | MAP_SHARED, fd, 0);
-    if (address != cb->data + cb->size)
-        fail();
+    assert((address == cb->data + cb->size) && "cbuffer: mmap(3) failed\n");
 
     status = close(fd);
-    if (status)
-        fail();
+    assert(status == 0 && "cbuffer: close failed\n");
 }
 
-cbuf_t *cbuf_new(const unsigned int order)
+void cbuf_new(cbuf_t* dst, const unsigned long int size)
 {
-    cbuf_t *me = malloc(sizeof(cbuf_t));
-    me->size = 1UL << order;
-    me->head = me->tail = 0;
-    __create_buffer_mirror(me);
-    return me;
+    dst->size = size;
+    dst->head = dst->tail = 0;
+    __create_buffer_mirror(dst);
 }
 
 void cbuf_free(cbuf_t *me)

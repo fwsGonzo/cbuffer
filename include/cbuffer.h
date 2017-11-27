@@ -9,9 +9,9 @@ typedef struct
 } cbuf_t;
 
 /** Create new circular buffer.
- * @param order Size of the circular buffer when taking this as a power of 2.
+ * @param size Size of the circular buffer.
  * @return pointer to new circular buffer */
-cbuf_t *cbuf_new(const unsigned int order);
+void cbuf_new(cbuf_t* dst, const unsigned long int size);
 
 /** Free memory used by circular buffer
  * @param cb The circular buffer. */
