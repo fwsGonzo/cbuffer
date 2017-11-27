@@ -11,7 +11,7 @@
 #include <assert.h>
 #include <sys/mman.h>
 #include <unistd.h>
-#include "cbuffer.h"
+#include <cbuffer.h>
 
 #define fail() assert(0)
 
